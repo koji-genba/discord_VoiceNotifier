@@ -31,28 +31,32 @@ def save_channel_config(config):
 async def on_voice_state_update(member, before, after):
     config = load_channel_config()
     guild_id = str(member.guild.id)
+
+    default_join_message = ':green_circle:{member}{channel}'
+    default_leave_message = ':red_circle:{member}{channel}'
     if guild_id in config:
-        custom_message = config[guild_id].get('custom_message', '')
         # 入室通知
         if before.channel is None and after.channel is not None:
             if after.channel.id in config[guild_id]['voice_channels']:
+                message = config[guild_id].get('join_message', default_join_message)
                 text_channel = bot.get_channel(config[guild_id]['text_channel'])
                 if member.nick != None:
-                    await text_channel.send(config[guild_id].get('join_message', '').format(member=member.nick, channel=after.channel.name))
+                    await text_channel.send(message.format(member=member.nick, channel=after.channel.name))
                 elif member.display_name != None:
-                    await text_channel.send(config[guild_id].get('join_message', '').format(member=member.display_name, channel=after.channel.name))
+                    await text_channel.send(message.format(member=member.display_name, channel=after.channel.name))
                 else:
-                    await text_channel.send(config[guild_id].get('join_message', '').format(member=member.name, channel=after.channel.name))
+                    await text_channel.send(message.format(member=member.name, channel=after.channel.name))
         # 退室通知
         elif before.channel is not None and after.channel is None:
             if before.channel.id in config[guild_id]['voice_channels']:
+                message = config[guild_id].get('leave_message', default_leave_message)
                 text_channel = bot.get_channel(config[guild_id]['text_channel'])
                 if member.nick != None:
-                    await text_channel.send(config[guild_id].get('leave_message', '').format(member=member.nick, channel=after.channel.name))
+                    await text_channel.send(message.format(member=member.nick, channel=before.channel.name))
                 elif member.display_name != None:
-                    await text_channel.send(config[guild_id].get('leave_message', '').format(member=member.display_name, channel=after.channel.name))
+                    await text_channel.send(message.format(member=member.display_name, channel=before.channel.name))
                 else:
-                    await text_channel.send(config[guild_id].get('leave_message', '').format(member=member.name, channel=after.channel.name))
+                    await text_channel.send(message.format(member=member.name, channel=before.channel.name))
 
 
 # スラッシュコマンドを使用して監視するボイスチャンネルを追加するコマンド
