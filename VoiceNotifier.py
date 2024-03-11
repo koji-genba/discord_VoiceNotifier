@@ -95,27 +95,6 @@ async def set_text_channel(interaction: discord.Interaction, text_channel: disco
     save_channel_config(config)
     await interaction.response.send_message(f'通知を送信するテキストチャンネルを{text_channel.name}に設定しました。')
 
-# ヘルプコマンド
-# スラッシュコマンドを使用してコマンドの使い方を表示するコマンド
-@bot.tree.command()
-@app_commands.describe(command='説明を表示するコマンド')
-async def man(interaction: discord.Interaction, command: str):
-    # コマンドの説明を格納する辞書
-    command_descriptions = {
-        'add_voice_channel': 'ボイスチャンネルを監視リストに追加します。使用方法: /add_voice_channel [ボイスチャンネル]',
-        'set_text_channel': '通知を送信するテキストチャンネルを設定します。既に指定されている場合は置き換えられます。使用方法: /set_text_channel [テキストチャンネル]',
-        'remove_voice_channel': '監視リストからボイスチャンネルを削除します。使用方法: /remove_voice_channel [ボイスチャンネル]',
-    }
-    
-    # 指定されたコマンドの説明を取得
-    description = command_descriptions.get(command)
-    
-    # 説明が見つかった場合は表示、見つからない場合はエラーメッセージを表示
-    if description:
-        await interaction.response.send_message(description)
-    else:
-        await interaction.response.send_message(f'コマンド"{command}"の説明が見つかりません。')
-
 
 # スラッシュコマンドを使用して監視するボイスチャンネルを削除するコマンド
 @bot.tree.command()
@@ -163,6 +142,31 @@ async def set_leave_message(interaction: discord.Interaction, leave_message: str
     save_channel_config(config)
     await interaction.response.send_message(f'退室通知メッセージを設定しました: "{leave_message}"')
 
+# ヘルプコマンド
+# スラッシュコマンドを使用してコマンドの使い方を表示するコマンド
+@bot.tree.command()
+@app_commands.describe(command='説明を表示するコマンド')
+async def voicenotifier_man(interaction: discord.Interaction, command: str):
+    # コマンドの説明を格納する辞書
+    command_descriptions = {
+        'add_voice_channel': 'ボイスチャンネルを監視リストに追加します。複数のボイスチャンネルを監視したい場合は一つずつ追加してください。\n使用方法: `/add_voice_channel [ボイスチャンネル]`',
+        'remove_voice_channel': '監視リストからボイスチャンネルを削除します。複数のボイスチャンネルを監視から外したい場合は一つずつ追加してください。\n使用方法: `/remove_voice_channel [ボイスチャンネル]`',
+        'set_text_channel': '通知を送信するテキストチャンネルを設定します。既に指定されている場合は置き換えられます。つまり指定できるテキストチャンネルは一つだけです。\n使用方法: `/set_text_channel [テキストチャンネル]`',
+        'set_join_message': '入室時に送信するメッセージの形式を指定します。{member}、{channel}と書くと送信時に実際のユーザ名やチャンネル名で動的に置き換えられます。\n使用方法: `/set_join_message [message]`\n 例: `/set_join_message [{channel}]:green_circle:{member}`',
+        'set_leave_message': '退室時に送信するメッセージの形式を指定します。{member}、{channel}と書くと送信時に実際のユーザ名やチャンネル名で動的に置き換えられます。\n使用方法: `/set_join_message [message]`\n 例: `/set_join_message [{channel}]:red_circle:{member}`'
+    }
+    
+    # 指定されたコマンドの説明を取得
+    description = command_descriptions.get(command)
+    
+    # 説明が見つかった場合は表示、見つからない場合はエラーメッセージを表示
+    if description:
+        await interaction.response.send_message(description)
+    else:
+        await interaction.response.send_message(f'コマンド"{command}"の説明が見つかりません。')
+
+
+
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')
@@ -180,7 +184,7 @@ async def on_guild_join(guild):
     
     # 歓迎メッセージを送信
     if default_channel:
-        await default_channel.send(f'こんにちは！{guild.name}サーバーに招待していただきありがとうございます！コマンドの使い方については、`/man [コマンド名]` を使用してください。\nコマンドは次の3つです。\n`/set_text_channel`\n`/add_voice_channel`\n`/remove_voice_channel`')
+        await default_channel.send(f'こんにちは！{guild.name}サーバーに招待していただきありがとうございます!\n\nまずは`/set_text_channel`と`/add_voice_channel`を実行しセットアップを行ってください。\nコマンドの意味や使い方については、`/voicenotifier_man [コマンド名]` を使用してください。')
 
 
 # ボットのトークンを設定
