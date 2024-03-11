@@ -27,32 +27,34 @@ def save_channel_config(config):
     with open(CONFIG_FILE, 'w') as config_file:
         json.dump(config, config_file, indent=4)
 
-# ボイスチャンネルの入退室を監視するイベント
 @bot.event
 async def on_voice_state_update(member, before, after):
     config = load_channel_config()
     guild_id = str(member.guild.id)
     if guild_id in config:
-        # 退室通知
-        if before.channel is not None and before.channel.id in config[guild_id]['voice_channels'] :
-            text_channel = bot.get_channel(config[guild_id]['text_channel'])
-            if member.nick != None:
-                await text_channel.send("["+ before.channel.name +"]:red_circle:" + member.nick)
-            elif member.display_name != None:
-                await text_channel.send("["+ before.channel.name +"]:red_circle:" + member.display_name)
-            else:
-                await text_channel.send("["+ before.channel.name +"]:red_circle:" + member.name)
-        
+        custom_message = config[guild_id].get('custom_message', '')
         # 入室通知
-        if after.channel is not None and after.channel.id in config[guild_id]['voice_channels']:
-            text_channel = bot.get_channel(config[guild_id]['text_channel'])
-            if member.nick != None:
-                await text_channel.send("["+ after.channel.name +"]:green_circle:" + member.nick)
-            elif member.display_name != None:
-                await text_channel.send("["+ after.channel.name +"]:green_circle:" + member.display_name)
-            else:
-                await text_channel.send("["+ after.channel.name +"]:green_circle:" + member.name)
-        
+        if before.channel is None and after.channel is not None:
+            if after.channel.id in config[guild_id]['voice_channels']:
+                text_channel = bot.get_channel(config[guild_id]['text_channel'])
+                if member.nick != None:
+                    await text_channel.send(config[guild_id].get('join_message', '').format(member=member.nick, channel=after.channel.name))
+                elif member.display_name != None:
+                    await text_channel.send(config[guild_id].get('join_message', '').format(member=member.display_name, channel=after.channel.name))
+                else:
+                    await text_channel.send(config[guild_id].get('join_message', '').format(member=member.name, channel=after.channel.name))
+        # 退室通知
+        elif before.channel is not None and after.channel is None:
+            if before.channel.id in config[guild_id]['voice_channels']:
+                text_channel = bot.get_channel(config[guild_id]['text_channel'])
+                if member.nick != None:
+                    await text_channel.send(config[guild_id].get('leave_message', '').format(member=member.nick, channel=after.channel.name))
+                elif member.display_name != None:
+                    await text_channel.send(config[guild_id].get('leave_message', '').format(member=member.display_name, channel=after.channel.name))
+                else:
+                    await text_channel.send(config[guild_id].get('leave_message', '').format(member=member.name, channel=after.channel.name))
+
+
 # スラッシュコマンドを使用して監視するボイスチャンネルを追加するコマンド
 @bot.tree.command()
 @app_commands.describe(voice_channel='監視するボイスチャンネル')
@@ -125,6 +127,38 @@ async def remove_voice_channel(interaction: discord.Interaction, voice_channel: 
         await interaction.response.send_message(f'ボイスチャンネル{voice_channel.name}は監視リストに存在しません。')
     print(config)
 
+# スラッシュコマンドを使用して入室通知のカスタムメッセージを設定するコマンド
+@bot.tree.command()
+@app_commands.describe(join_message='入室時に送信するカスタムメッセージ')
+async def set_join_message(interaction: discord.Interaction, join_message: str):
+    config = load_channel_config()
+    guild_id = str(interaction.guild_id)
+    
+    # ギルドIDに対応する設定がなければ新しく作成
+    if guild_id not in config:
+        config[guild_id] = {'voice_channels': [], 'text_channel': None, 'join_message': '', 'leave_message': ''}
+    
+    # 入室通知メッセージを設定
+    config[guild_id]['join_message'] = join_message
+    save_channel_config(config)
+    await interaction.response.send_message(f'入室通知メッセージを設定しました: "{join_message}"')
+
+# スラッシュコマンドを使用して退室通知のカスタムメッセージを設定するコマンド
+@bot.tree.command()
+@app_commands.describe(leave_message='退室時に送信するカスタムメッセージ')
+async def set_leave_message(interaction: discord.Interaction, leave_message: str):
+    config = load_channel_config()
+    guild_id = str(interaction.guild_id)
+    
+    # ギルドIDに対応する設定がなければ新しく作成
+    if guild_id not in config:
+        config[guild_id] = {'voice_channels': [], 'text_channel': None, 'join_message': '', 'leave_message': ''}
+    
+    # 退室通知メッセージを設定
+    config[guild_id]['leave_message'] = leave_message
+    save_channel_config(config)
+    await interaction.response.send_message(f'退室通知メッセージを設定しました: "{leave_message}"')
+
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}')
@@ -146,4 +180,4 @@ async def on_guild_join(guild):
 
 
 # ボットのトークンを設定
-bot.run("Here TOKEN")
+bot.run("TOKEN")
