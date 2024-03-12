@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import json
+import os
 
 # ボットの設定
 intents = discord.Intents.default()
@@ -12,7 +13,7 @@ intents.voice_states = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 # チャンネルの設定を保存するファイル名
-CONFIG_FILE = 'channel_config.json'
+CONFIG_FILE = 'data/channel_config.json'
 
 # チャンネル設定を読み込む関数
 def load_channel_config():
@@ -188,4 +189,4 @@ async def on_guild_join(guild):
 
 
 # ボットのトークンを設定
-bot.run("TOKEN")
+bot.run(os.environ.get('TOKEN'))
