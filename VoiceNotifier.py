@@ -49,7 +49,7 @@ async def on_voice_state_update(member, before, after):
                     await text_channel.send(message.format(member=member.name, channel=before.channel.name))
 
         # 入室通知
-        if after.channel is None and after.channel.id in config[guild_id]['voice_channels']:
+        if after.channel is not None and after.channel.id in config[guild_id]['voice_channels']:
                 message = config[guild_id].get('join_message', default_join_message)
                 text_channel = bot.get_channel(config[guild_id]['text_channel'])
                 if member.nick != None:
