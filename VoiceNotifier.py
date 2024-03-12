@@ -35,21 +35,10 @@ async def on_voice_state_update(member, before, after):
 
     default_join_message = ':green_circle:{member}{channel}'
     default_leave_message = ':red_circle:{member}{channel}'
+
     if guild_id in config:
-        # 入室通知
-        if before.channel is None and after.channel is not None:
-            if after.channel.id in config[guild_id]['voice_channels']:
-                message = config[guild_id].get('join_message', default_join_message)
-                text_channel = bot.get_channel(config[guild_id]['text_channel'])
-                if member.nick != None:
-                    await text_channel.send(message.format(member=member.nick, channel=after.channel.name))
-                elif member.display_name != None:
-                    await text_channel.send(message.format(member=member.display_name, channel=after.channel.name))
-                else:
-                    await text_channel.send(message.format(member=member.name, channel=after.channel.name))
         # 退室通知
-        elif before.channel is not None and after.channel is None:
-            if before.channel.id in config[guild_id]['voice_channels']:
+        if before.channel is not None and before.channel.id in config[guild_id]['voice_channels']:
                 message = config[guild_id].get('leave_message', default_leave_message)
                 text_channel = bot.get_channel(config[guild_id]['text_channel'])
                 if member.nick != None:
@@ -58,6 +47,17 @@ async def on_voice_state_update(member, before, after):
                     await text_channel.send(message.format(member=member.display_name, channel=before.channel.name))
                 else:
                     await text_channel.send(message.format(member=member.name, channel=before.channel.name))
+
+        # 入室通知
+        if after.channel is not None and after.channel.id in config[guild_id]['voice_channels']:
+                message = config[guild_id].get('join_message', default_join_message)
+                text_channel = bot.get_channel(config[guild_id]['text_channel'])
+                if member.nick != None:
+                    await text_channel.send(message.format(member=member.nick, channel=after.channel.name))
+                elif member.display_name != None:
+                    await text_channel.send(message.format(member=member.display_name, channel=after.channel.name))
+                else:
+                    await text_channel.send(message.format(member=member.name, channel=after.channel.name))
 
 
 # スラッシュコマンドを使用して監視するボイスチャンネルを追加するコマンド
@@ -79,18 +79,18 @@ async def add_voice_channel(interaction: discord.Interaction, voice_channel: dis
 async def set_text_channel(interaction: discord.Interaction, text_channel: discord.TextChannel):
     config = load_channel_config()
     guild_id = str(interaction.guild_id)
-    
+
     # ギルドIDに対応する設定がなければ新しく作成
     if guild_id not in config:
         config[guild_id] = {'voice_channels': [], 'text_channel': None}
-    
+
     # 以前に設定されたテキストチャンネルがあれば通知
     old_text_channel_id = config[guild_id].get('text_channel')
     if old_text_channel_id is not None:
         old_text_channel = bot.get_channel(old_text_channel_id)
         if old_text_channel:
             await old_text_channel.send(f'通知チャンネルが{text_channel.name}に変更されました。')
-    
+
     # 新しいテキストチャンネルを設定
     config[guild_id]['text_channel'] = text_channel.id
     save_channel_config(config)
@@ -117,11 +117,11 @@ async def remove_voice_channel(interaction: discord.Interaction, voice_channel: 
 async def set_join_message(interaction: discord.Interaction, join_message: str):
     config = load_channel_config()
     guild_id = str(interaction.guild_id)
-    
+
     # ギルドIDに対応する設定がなければ新しく作成
     if guild_id not in config:
         config[guild_id] = {'voice_channels': [], 'text_channel': None, 'join_message': '', 'leave_message': ''}
-    
+
     # 入室通知メッセージを設定
     config[guild_id]['join_message'] = join_message
     save_channel_config(config)
@@ -133,11 +133,11 @@ async def set_join_message(interaction: discord.Interaction, join_message: str):
 async def set_leave_message(interaction: discord.Interaction, leave_message: str):
     config = load_channel_config()
     guild_id = str(interaction.guild_id)
-    
+
     # ギルドIDに対応する設定がなければ新しく作成
     if guild_id not in config:
         config[guild_id] = {'voice_channels': [], 'text_channel': None, 'join_message': '', 'leave_message': ''}
-    
+
     # 退室通知メッセージを設定
     config[guild_id]['leave_message'] = leave_message
     save_channel_config(config)
@@ -156,10 +156,10 @@ async def voicenotifier_man(interaction: discord.Interaction, command: str):
         'set_join_message': '入室時に送信するメッセージの形式を指定します。{member}、{channel}と書くと送信時に実際のユーザ名やチャンネル名で動的に置き換えられます。\n使用方法: `/set_join_message [message]`\n 例: `/set_join_message [{channel}]:green_circle:{member}`',
         'set_leave_message': '退室時に送信するメッセージの形式を指定します。{member}、{channel}と書くと送信時に実際のユーザ名やチャンネル名で動的に置き換えられます。\n使用方法: `/set_join_message [message]`\n 例: `/set_join_message [{channel}]:red_circle:{member}`'
     }
-    
+
     # 指定されたコマンドの説明を取得
     description = command_descriptions.get(command)
-    
+
     # 説明が見つかった場合は表示、見つからない場合はエラーメッセージを表示
     if description:
         await interaction.response.send_message(description)
@@ -172,9 +172,9 @@ async def voicenotifier_man(interaction: discord.Interaction, command: str):
 async def on_ready():
     print(f'We have logged in as {bot.user}')
 
-    new_activity = f"スラッシュコマンド実装中……" 
-    await bot.change_presence(activity=discord.Game(new_activity)) 
-    # スラッシュコマンドを同期 
+    new_activity = f"スラッシュコマンド実装中……"
+    await bot.change_presence(activity=discord.Game(new_activity))
+    # スラッシュコマンドを同期
     await bot.tree.sync()
 
 # サーバに招待された時のやつ
@@ -182,7 +182,7 @@ async def on_ready():
 async def on_guild_join(guild):
     # デフォルトのテキストチャンネルを見つける
     default_channel = next((channel for channel in guild.text_channels if channel.permissions_for(guild.me).send_messages), None)
-    
+
     # 歓迎メッセージを送信
     if default_channel:
         await default_channel.send(f'こんにちは！{guild.name}サーバーに招待していただきありがとうございます!\n\nまずは`/set_text_channel`と`/add_voice_channel`を実行しセットアップを行ってください。\nコマンドの意味や使い方については、`/voicenotifier_man [コマンド名]` を使用してください。')
