@@ -1,0 +1,12 @@
+version: "3"
+services:
+    voicenotifier:
+        build: .
+        environment:
+            TOKEN: your token
+        volumes:
+            - discord_VoiceNotifier:/app
+        restart: always
+
+volumes:
+  discord_VoiceNotifier:
