@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import json
+import os
 
 # ボットの設定
 intents = discord.Intents.default()
@@ -188,4 +189,4 @@ async def on_guild_join(guild):
 
 
 # ボットのトークンを設定
-bot.run("TOKEN")
+bot.run(os.environ.get('TOKEN'))
