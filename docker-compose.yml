@@ -2,6 +2,7 @@ version: "3"
 services:
     voicenotifier:
         build:
+          context: .
           dockerfile: Dockerfile
         environment:
             TOKEN: your token
