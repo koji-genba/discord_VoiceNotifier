@@ -13,24 +13,24 @@ discordのボイスチャンネルを監視して入退室があった場合に�
 ##### /voicenotifier_man
 各コマンドのマニュアル出すやつです。  
 ~~まあここに書いてあるのと同じことしか言わないんだけど~~  
-使用方法: /set_text_channel [command]
+使用方法: `/set_text_channel [command]`  
 ##### /set_text_channel
 通知を送信するテキストチャンネルを設定します。既に指定されている場合は置き換えられます。つまり指定できるテキストチャンネルは一つだけです。  
-使用方法: /set_text_channel [テキストチャンネル]
+使用方法: `/set_text_channel [テキストチャンネル]`  
 ##### /add_voice_channel
 ボイスチャンネルを監視リストに追加します。複数のボイスチャンネルを監視したい場合は一つずつ追加してください。  
-使用方法: /add_voice_channel [ボイスチャンネル]  
+使用方法: `/add_voice_channel [ボイスチャンネル]`  
 ##### /remove_voice_channel
 監視リストからボイスチャンネルを削除します。複数のボイスチャンネルを監視から外したい場合は一つずつ追加してください。  
-使用方法: /remove_voice_channel [ボイスチャンネル]  
+使用方法: `/remove_voice_channel [ボイスチャンネル]`  
 ##### /set_join_message
-入室時に送信するメッセージの形式を指定します。{member}、{channel}と書くと送信時に実際のユーザ名やチャンネル名で動的に置き換えられます。  
-使用方法: /set_join_message [message]  
- 例: /set_join_message [{channel}]:green_circle:{member}  
+入室時に送信するメッセージの形式を指定します。`{member}`、`{channel}`と書くと送信時に実際のユーザ名やチャンネル名で動的に置き換えられます。  
+使用方法: `/set_join_message [message]`  
+ 例: `/set_join_message [{channel}]:green_circle:{member}`  
 ##### /set_leave_message
-退室時に送信するメッセージの形式を指定します。{member}、{channel}と書くと送信時に実際のユーザ名やチャンネル名で動的に置き換えられます。  
-使用方法: /set_join_message [message]  
- 例: /set_join_message [{channel}]:red_circle:{member}  
+退室時に送信するメッセージの形式を指定します。`{member}`、`{channel}`と書くと送信時に実際のユーザ名やチャンネル名で動的に置き換えられます。  
+使用方法: `/set_join_message [message]`  
+ 例: `/set_join_message [{channel}]:red_circle:{member}`  
   
   
   
