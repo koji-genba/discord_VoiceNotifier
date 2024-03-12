@@ -172,7 +172,7 @@ async def voicenotifier_man(interaction: discord.Interaction, command: str):
 async def on_ready():
     print(f'We have logged in as {bot.user}')
 
-    new_activity = f"スラッシュコマンド実装中……"
+    new_activity = f"ボイスチャンネル監視中……"
     await bot.change_presence(activity=discord.Game(new_activity))
     # スラッシュコマンドを同期
     await bot.tree.sync()
