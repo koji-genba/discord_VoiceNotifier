@@ -2,6 +2,7 @@ FROM python:3.11-slim-bookworm as builder
 
 WORKDIR /app
 COPY ./VoiceNotifier.py .
+RUN mkdir data && chmod 777 data
 
 ENV PYTHONUSERBASE=/app/__pypackages__
 RUN pip --no-cache-dir install --upgrade pip && pip install --no-cache-dir --user discord

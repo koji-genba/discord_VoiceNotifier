@@ -13,7 +13,7 @@ intents.voice_states = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 # チャンネルの設定を保存するファイル名
-CONFIG_FILE = 'channel_config.json'
+CONFIG_FILE = 'data/channel_config.json'
 
 # チャンネル設定を読み込む関数
 def load_channel_config():

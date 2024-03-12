@@ -1,12 +1,13 @@
 version: "3"
 services:
     voicenotifier:
-        build: .
+        build:
+          dockerfile: Dockerfile
         environment:
             TOKEN: your token
         volumes:
-            - discord_VoiceNotifier:/app
+            - discord_VoiceNotifier_data:/app/data
         restart: always
 
 volumes:
-  discord_VoiceNotifier:
+  discord_VoiceNotifier_data:
