@@ -7,7 +7,7 @@ services:
         environment:
             TOKEN: your token
         volumes:
-            - discord_VoiceNotifier_data:/app/data
+            - channel_data:/app/data
         restart: always
 
 volumes:
