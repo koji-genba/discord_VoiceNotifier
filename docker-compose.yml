@@ -11,4 +11,4 @@ services:
         restart: always
 
 volumes:
-  discord_VoiceNotifier_data:
+  channel_data:
