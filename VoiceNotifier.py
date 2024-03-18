@@ -33,8 +33,8 @@ async def on_voice_state_update(member, before, after):
     config = load_channel_config()
     guild_id = str(member.guild.id)
 
-    default_join_message = ':green_circle:{member}{channel} in devenv'
-    default_leave_message = ':red_circle:{member}{channel} in devenv'
+    default_join_message = ':green_circle:{member}{channel}'
+    default_leave_message = ':red_circle:{member}{channel}'
 
     if guild_id in config:
         # 退室通知
