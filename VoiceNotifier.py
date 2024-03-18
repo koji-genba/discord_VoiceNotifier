@@ -68,6 +68,9 @@ async def add_voice_channel(interaction: discord.Interaction, voice_channel: dis
     guild_id = str(interaction.guild_id)
     if guild_id not in config:
         config[guild_id] = {'voice_channels': [], 'text_channel': None}
+    if voice_channel.id in config[guild_id]['voice_channels']:
+        await interaction.response.send_message(f'ボイスチャンネル{voice_channel.name}は既に監視リストに存在します')
+        return
     config[guild_id]['voice_channels'].append(voice_channel.id)
     save_channel_config(config)
     await interaction.response.send_message(f'ボイスチャンネル{voice_channel.name}を監視リストに追加しました。')
