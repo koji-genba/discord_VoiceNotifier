@@ -33,12 +33,12 @@ async def on_voice_state_update(member, before, after):
     config = load_channel_config()
     guild_id = str(member.guild.id)
 
-    default_join_message = ':green_circle:{member}{channel}'
-    default_leave_message = ':red_circle:{member}{channel}'
+    default_join_message = ':green_circle:{member}{channel} in devenv'
+    default_leave_message = ':red_circle:{member}{channel} in devenv'
 
     if guild_id in config:
         # 退室通知
-        if before.channel is not None and before.channel.id in config[guild_id]['voice_channels']:
+        if before.channel is not after.channel and before.channel is not None and before.channel.id in config[guild_id]['voice_channels']:
                 message = config[guild_id].get('leave_message', default_leave_message)
                 text_channel = bot.get_channel(config[guild_id]['text_channel'])
                 if member.nick != None:
@@ -49,7 +49,7 @@ async def on_voice_state_update(member, before, after):
                     await text_channel.send(message.format(member=member.name, channel=before.channel.name))
 
         # 入室通知
-        if after.channel is not None and after.channel.id in config[guild_id]['voice_channels']:
+        if before.channel is not after.channel and after.channel is not None and after.channel.id in config[guild_id]['voice_channels']:
                 message = config[guild_id].get('join_message', default_join_message)
                 text_channel = bot.get_channel(config[guild_id]['text_channel'])
                 if member.nick != None:
